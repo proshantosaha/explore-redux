@@ -1,5 +1,5 @@
 import {useDispatch, useSelector} from 'react-redux'
-import { clearHistory } from '../store';
+import { clearHistory } from '../store-redux';
 
 const History = () => {
     const history = useSelector(state => state.history)
