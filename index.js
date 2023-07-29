@@ -1,74 +1,122 @@
-// state - count:0
-// action - increament,decreament,reset
-// reducer
-// store
-// dispetch
+//  json api :   https://jsonplaceholder.typicode.com/todos
+import axios from 'axios';
+import {applyMiddleware, createStore} from 'redux'
+import thunk from 'redux-thunk'
 
-import { createStore } from "redux"
+const apiURL = 'https://jsonplaceholder.typicode.com/todos'
 
-
-const INCREMENT = "INCREMENT"
-const DECREMENT = "DECREMENT"
-
-const RESET = "RESET"
+// constant/variable
 
 
+const GET_TODOS_REQUEST = "GET_TODOS_REQUEST";
+const GET_TODOS_SUCCESS = "GET_TODOS_SUCCESS";
+const GET_TODOS_FAILOR = "GET_TODOS_FAILOR";
 
-const countState = {
-    count:0 
-}
 
 
-const increamentAction = () =>{
-    return {
-        type:INCREMENT
-    }
-}
-const decreamentAction = () =>{
-    return {
-        type:DECREMENT
-    }
-}
-const resetAction = () =>{
-    return {
-        type:RESET
+
+// state
+const initTodosState ={
+    todos :[],
+    isLoading :false,
+    error:null,
+};
+
+
+// actions
+
+const getTodosRequest = () =>{
+
+    return{
+        type: GET_TODOS_REQUEST
     }
 }
 
+const getTodosSuccess = (todos) =>{
 
-const countReducer = (state=countState,action)=>{
+    return{
+        type: GET_TODOS_SUCCESS,
+        payload:todos
+    }
+}
+
+
+const getTodosFailor = (error) =>{
+
+    return{
+        type: GET_TODOS_FAILOR,
+        payload:error
+    }
+}
+
+const todosReducer = (state=initTodosState,action) =>{
     switch (action.type) {
-        case INCREMENT:
+        case GET_TODOS_REQUEST :
             return{
                 ...state,
-                count : state.count + 1
+                isLoading:true
         };
-            
-        case DECREMENT:
-        return{
-            ...state,
-            count : state.count - 1
-        };
-        case RESET:
+        case GET_TODOS_SUCCESS :
             return{
                 ...state,
-                count : 0
-         };
-    
+                isLoading:false,
+                payload:action.payload
+        };
+        case GET_TODOS_FAILOR :
+            return{
+                ...state,
+                isLoading:false,
+                todos:action.payload
+        };
+
         default:
-            state;
+            break;
     }
+
 }
 
 
 
-const store = createStore(countReducer)
+// data fetch 
+const fetchData = () =>{
+    return(dispatch)=>{
+       
+        dispatch(getTodosRequest());
+        axios.get(apiURL)
+        .then(res=>{
+           const todos = res.data;
+           const titles = todos.map(todo=>todo.title)
+           console.log(titles);
+           dispatch(getTodosSuccess(titles));
+
+
+        })
+        .catch((error)=>{
+            const errorMessage=(error.message);
+            dispatch(getTodosFailor(errorMessage))
+
+        });
+       
+
+    }
+};
+
+
+
+
+// const store = compose(
+//     applyMiddleware(
+//         thunk,
+//         logger
+//     )
+// )(createStore)(counter);
+
+
+const store = createStore(todosReducer,applyMiddleware(thunk.default))
 
 store.subscribe(()=>{
     console.log(store.getState());
 })
 
-store.dispatch(increamentAction())
-store.dispatch(decreamentAction())
-store.dispatch(resetAction())
 
+store.dispatch(fetchData())
