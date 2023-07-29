@@ -1,16 +1,17 @@
-import {useDispatch, useSelector} from 'react-redux'
-import { clearHistory } from '../store-redux';
+import { useStoreActions,useStoreState} from 'easy-peasy';
 
 const History = () => {
-    const history = useSelector(state => state.history)
-   const dispatch = useDispatch()
+
+  const {items} = useStoreState(state=> state.history);
+  const {clearHistory} = useStoreActions(actions => actions.history)
+   
 
 
   return (
     <div>
-       <p>Historis <button onClick={()=>dispatch(clearHistory())}>Clear History</button></p>
+       <p>Historis <button onClick={clearHistory}>Clear History</button></p>
        <ul>
-        {history.map((item)=>(
+        {items.map((item)=>(
             <li key ={item.id}>
                 {' '}
                 {item.action}-{item.count}-{item.time.toISOString()}{' '}

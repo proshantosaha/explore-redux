@@ -1,17 +1,15 @@
-import { useDispatch } from 'react-redux'
-import {decrement,addHistory,Decrement} from '../store'
+import { useStoreActions } from "easy-peasy"
 
-const DccrementBtn = () => {
-    const dispatch = useDispatch()
-
-    const handleClick = () =>{
-        dispatch(decrement(1))
-        dispatch(addHistory({action :Decrement,count:1}))
-    }
+const DecrementBtn = () => {
+  const {count,history} =  useStoreActions(actions => actions.count)
+  const handleClick = () =>{
+   count.increment(1)
+    history.addHistory({actions:'decrement', count:1})
+  }
    
   return (
     <button onClick={handleClick}>-</button>
   )
 }
 
-export default DccrementBtn
+export default DecrementBtn
