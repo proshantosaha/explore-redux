@@ -61,12 +61,14 @@ const todosReducer = (state=initTodosState,action) =>{
                 ...state,
                 isLoading:false,
                 payload:action.payload
+                // loading hower drkr nei tai isloading false
         };
         case GET_TODOS_FAILOR :
             return{
                 ...state,
                 isLoading:false,
                 todos:action.payload
+                 // loading hower drkr nei tai isloading false
         };
 
         default:
